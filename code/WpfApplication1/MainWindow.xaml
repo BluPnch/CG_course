@@ -1,0 +1,131 @@
+﻿<Window x:Class="WpfApplication1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="3D Sphere" WindowState="Maximized" 
+        Height="850" Width="1125" 
+        Background="White">
+
+    <Window.Resources>
+        <Style TargetType="GroupBox">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="16" Foreground="Black"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        
+        <!-- Стиль для кнопок -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="Gray"/> 
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="14"/> 
+            <Setter Property="HorizontalContentAlignment" Value="Center"/> 
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/> 
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" /> <!-- Область для Viewport3D -->
+            <ColumnDefinition Width="200" /> <!-- Область для кнопок -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Viewport для отображения 3D-сцены -->
+        <Viewport3D x:Name="MainViewport" Grid.Column="0">
+            <Viewport3D.Camera>
+                <PerspectiveCamera x:Name="MainCamera"
+                                   Position="20, 40, 170"
+                                   LookDirection="0, 0, -1"
+                                   UpDirection="0, 30, 0"
+                                   FieldOfView="70" />
+            </Viewport3D.Camera>
+
+            <!-- Источник света для сцены -->
+            <ModelVisual3D x:Name="vis3DLighting">
+                <ModelVisual3D.Content>
+                    <DirectionalLight x:Name="dirLightMain" Direction="0, 0, 0"/>
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+        </Viewport3D>
+
+        <!-- Панель с кнопками для управления сценой -->
+        <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10">
+            <!-- "Параметры поля" -->
+            <GroupBox Header="Параметры поля" Margin="0,0,0,10" Background="White" Foreground="Black">
+                <StackPanel>
+                    <TextBlock Text="Ширина поля:" Margin="0,5,0,0" Foreground="Black"/>
+                    <TextBox x:Name="WidthTextBox" Width="120" Margin="0,5,0,10" Background="White" Foreground="Black"/>
+                    <TextBlock Text="Высота поля:" Margin="0,5,0,0" Foreground="Black"/>
+                    <TextBox x:Name="HeightTextBox" Width="120" Margin="0,5,0,10" Background="White" Foreground="Black"/>
+                    <TextBlock Text="Количество подсолнухов:" Margin="0,5,0,0" Foreground="Black"/>
+                    <TextBox x:Name="CountSunflowersBox" Width="120" Margin="0,5,0,10" Background="White" Foreground="Black"/>
+                    <Button Content="Загрузить сцену" Click="SetSceneSizeButton_Click" Width="150" Margin="0,10,0,0" Background="SeaGreen"/>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- "Отражение" -->
+            <GroupBox Header="Отражение" Margin="0,0,0,10" Background="White" Foreground="Black">
+                <StackPanel>
+                    <TextBlock Text="Коэф. дифф. отражения:" Margin="0,5,0,0" Foreground="Black"/>
+                    <TextBox x:Name="DiffReflectBox" Width="120" Margin="0,5,0,10" Background="White" Foreground="Black"/>
+                    <TextBlock Text="Коэф. расс. отражения:" Margin="0,5,0,0" Foreground="Black"/>
+                    <TextBox x:Name="ScatterReflectBox" Width="120" Margin="0,5,0,10" Background="White" Foreground="Black"/>
+                    <Button Content="Задать коэффициенты" Click="SetCoeffsButton_Click" Width="150" Margin="0,10,0,0"  Background="SeaGreen"/>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- "Ветер" -->
+            <GroupBox Header="Ветер" Margin="0,0,0,10" Background="White" Foreground="Black">
+                <StackPanel>
+                    <TextBlock Text="Амплитуда наклона:" Margin="0,5,0,0" Foreground="Black"/>
+                    <TextBox x:Name="AmplitudeWindTextBox" Width="120" Margin="0,5,0,10" Background="White" Foreground="Black"/>
+                    <TextBlock Text="Частота наклона:" Margin="0,5,0,0" Foreground="Black"/>
+                    <TextBox x:Name="FrequencyWindTextBox" Width="120" Margin="0,5,0,10" Background="White" Foreground="Black"/>
+                    <Button Content="Запустить ветер" Click="StartWindButton_Click" Width="150" Margin="0,10,0,0" Background="SeaGreen"/>
+                    <Button Content="Остановить ветер" Click="StopWindButton_Click" Width="150" Margin="0,10,0,0" Background="SeaGreen"/>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- "Время суток" -->
+            <GroupBox Header="Время суток" Margin="0,0,0,10" Background="White" Foreground="Black">
+                <StackPanel>
+                    <ComboBox x:Name="TimeOfDayComboBox" Width="120" Margin="0,5,0,10" Background="White" Foreground="Black">
+                        <ComboBoxItem Content="Утро"/>
+                        <ComboBoxItem Content="День"/>
+                        <ComboBoxItem Content="Вечер"/>
+                        <ComboBoxItem Content="Ночь"/>
+                    </ComboBox>
+                    <Button Content="Применить время" Click="ApplyTimeOfDayButton_Click" Width="150" Margin="0,10,0,0" Background="SeaGreen"/>
+                    <TextBlock Text="Скорость течения времени:" Margin="0,5,0,0" Foreground="Black"/>
+                    <TextBox x:Name="TimeGoingBox" Width="120" Margin="0,5,0,10" Background="White" Foreground="Black"/>
+                    <Button Content="Установить" Click="SetTimeGoingButton_Click" Width="150" Margin="0,10,0,0" Background="SeaGreen"/>
+                </StackPanel>
+            </GroupBox>
+            
+            <!-- <Button Content="Тестирование кол-ва" Click="TestSunflowerFieldLoading" Width="105" Margin="0,10,0,0"/> -->
+            <Button Content="Тестирование ветра" Click="TestWindPerformance" Width="105" Margin="0,10,0,0"/>
+            <!-- <Button Content="Тестирование поля" Click="TestSunflowerFieldLoadingWithVariableSceneSize" Width="105" Margin="0,10,0,0"/> -->
+        </StackPanel>
+    </Grid>
+</Window>
